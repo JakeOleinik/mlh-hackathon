@@ -1,0 +1,72 @@
+
+{% for article in articles %}
+    <div class='cell' style='width: 200px; height: 200px; background-image: url({{ article.image }})'>
+        <a class='cell-link' href='#'>
+            <h2 class='cell-title' data-id="{{ article.id }}">{{ article.title }}</h2>
+            <div class="cell-content"></div>
+        </a>
+    </div>
+{% endfor %}
+
+<script>
+    $('.cell').click(function(){
+        $('.cell').not(this).each( function() {
+        $(this).hide()
+    });
+
+    var art_id = $(this).find('.cell-title').attr("data-id");
+    $(this).find('.cell-title').empty();
+    $(this).css('left', 0);
+    $(this).css('top', 0);
+    $(this).css('width', '100%');
+    $(this).css('height', '100%');
+    $(this).css('background-image', 'none');
+
+    $('.cell').click(function() {
+        $(this).fadeOut( function() {
+            $('#freewall').empty();
+
+        });
+
+        $.get('/get-articles/', {query: final_transcript}, function(data){
+              $('#freewall').html(data);
+                var wall = new Freewall("#freewall");
+              wall.reset({
+                selector: '.cell',
+                animate: true,
+                cellW: 220,
+                cellH: 200,
+                onResize: function() {
+                  wall.fitWidth();
+                }
+                    });
+                    // for scroll bar appear;
+                $(window).trigger("resize");
+                wall.fitWidth();
+              });
+
+    });
+    /*
+    $(this).transition({width: 600, height: 400}, function() { wall.reset({
+                selector: '.cell',
+                animate: true,
+                cellW: 600,
+                cellH: 400,
+                onResize: function() {
+                  wall.fitWidth();
+                }
+                    });
+            //$(window).trigger("resize");
+
+    } );
+
+    */
+    //$('.cell').bind("transitioned webkitTransitionEnd oTransitionEnd MSTransitionEnd", );
+
+    $.get('/get-article/', {id: art_id}, function(data){
+
+      $('.cell-content').html(data);
+    });
+
+  });
+</script>
